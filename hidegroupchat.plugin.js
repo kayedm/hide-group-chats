@@ -22,8 +22,7 @@ function hideGroupChats() {
     // Changes the selected element to the top-most element so the entire group chat gets hidden
     if (!dmList.length == 0) {
         for (let i = 0; i < dmList.length; i++) {
-            const parent = dmList[i].closest("li");
-            dmList[i] = parent;
+            dmList[i] = dmList[i].closest("li");
         }
     }
 
