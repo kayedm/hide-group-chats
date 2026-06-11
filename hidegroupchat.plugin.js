@@ -20,7 +20,7 @@ function hideGroupChats() {
     dmList = Array.from(document.querySelectorAll("div.subtext__972a0"));
 
     // Changes the selected element to the top-most element so the entire group chat gets hidden
-    if (dmList) {
+    if (!dmList.length == 0) {
         for (let i = 0; i < dmList.length; i++) {
             const parent = dmList[i].parentElement.parentElement.parentElement.parentElement.parentElement;
             dmList[i] = parent;
