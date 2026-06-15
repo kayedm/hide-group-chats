@@ -9,11 +9,9 @@ let dmList = [];
 let hiddenDmList = [];
 
 /**
- * Creates a list of elements corresponding to the group DMs, and replaces the x button functionality to hide
- * the group instead of leaving it
+ * Gets a list of group DM's
  */
-function hideGroupChat() {
-
+function getGroupChats() {
     // Populates the DM list with group chat subtext elements
     dmList = Array.from(document.querySelectorAll("div.subtext__972a0"));
 
@@ -23,6 +21,12 @@ function hideGroupChat() {
             dmList[i] = dmList[i].closest("li");
         }
     }
+}
+
+/**
+ * Replaces a group chats x button functionality to hide the group instead of leaving it
+ */
+function addListeners() {
 
     // Attaches an event listener to group chat close button thats hides the group chat when pressed
     dmList.forEach(dm => {
@@ -34,10 +38,6 @@ function hideGroupChat() {
         const dmId = dm.querySelector("a").getAttribute("href").split("/").pop();
         const rule = `li:has(a[href="/channels/@me/${dmId}"]) { display: none !important; }`;
         const styleid = `hgc-${dmId}`;
-
-        if (hiddenDmList.includes(dmId)) {
-            BdApi.DOM.addStyle(styleid, rule);
-        }
 
         const xButton = dm.querySelector("div.iconsContainer__972a0");
 
@@ -55,8 +55,8 @@ function hideGroupChat() {
 }
 
 /**
- * Hides a given list of dm id's
- * @param groupchats The list of Dm's to hide
+ * Hides a given list of chat DM's
+ * @param groupchats The list of group DMs to hide
  */
 function hideGroupChats(groupchats) {
     groupchats.forEach(dmId => {
@@ -69,19 +69,22 @@ function hideGroupChats(groupchats) {
 module.exports = () => ({
     start() {
 
-        // Loaded saved DMs and hide them
+        // Load saved DMs and hide them
         hiddenDmList = BdApi.Data.load("HideGroupChats", "hidelist") ?? [];
         hideGroupChats(hiddenDmList);
 
-        hideGroupChat();
+        // Gets a list of all group chats from the DM list
+        getGroupChats();
+        // Adds listeners to the x button on the gorup chats to hide them instead of leave them
+        addListeners();
 
-        // Finds the module that runs when transitioning to a new group chat
+        // Finds the modual that runs when transitioning to a new group chat
         const [RouterModule, routerKey] = BdApi.Webpack.getWithKey(
             m => m?.toString?.()?.includes("transitionTo -"),
             { searchExports: true }
         );
 
-        // Patches the module to extract the group chat id and unhide it from the DM list before running
+        // Patches the module to extract the group chat id and un hide it from the DM list
         BdApi.Patcher.before("HideGroupChats", RouterModule, routerKey, (thisObject, args) => {
             const path = args[0];
             const channelId = path?.split("/").pop();
@@ -110,15 +113,20 @@ module.exports = () => ({
             delete dm.dataset.hasListener;
         });
 
-        hiddenDmList = [];
+        // Clear global variables
         dmList = [];
+        hiddenDmList = [];
 
     },
 
     onSwitch() {
 
-        // View changes remove the hidden styles, so they must be reapplied
-        hideGroupChat();
+        // View changes remove hidden styles and listeners, so they must be reapplied
+        getGroupChats();
+        // Re add the listeners
+        addListeners();
+        // Re hide the group chats
+        hideGroupChats(hiddenDmList);
 
     }
 });
