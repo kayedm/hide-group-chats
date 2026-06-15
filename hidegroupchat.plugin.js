@@ -5,7 +5,6 @@
  * @version 0.0.1
  */
 
-
 let dmList = [];
 let hiddenDmList = [];
 let observer;
@@ -14,7 +13,7 @@ let observer;
  * Creates a list of elements corresponding to the group DMs, and replaces the x button functionality to hide
  * the group instead of leaving it
  */
-function hideGroupChats() {
+function hideGroupChat() {
 
     // Populates the DM list with group chat subtext elements
     dmList = Array.from(document.querySelectorAll("div.subtext__972a0"));
@@ -58,9 +57,7 @@ function hideGroupChats() {
 
 module.exports = () => ({
     start() {
-
-        hideGroupChats();
-
+        hideGroupChat();
         // Unhides the group chat from the DM list if it is opened
         observer = new MutationObserver(() => {
             const channelId = window.location.pathname.split('/').pop();
