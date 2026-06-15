@@ -7,7 +7,6 @@
 
 let dmList = [];
 let hiddenDmList = [];
-let observer;
 
 /**
  * Creates a list of elements corresponding to the group DMs, and replaces the x button functionality to hide
@@ -76,28 +75,27 @@ module.exports = () => ({
 
         hideGroupChat();
 
-        // Unhides the group chat from the DM list if it is opened
-        observer = new MutationObserver(() => {
-            const channelId = window.location.pathname.split('/').pop();
-            const styleid = `hgc-${channelId}`;
+        // Finds the module that runs when transitioning to a new group chat
+        const [RouterModule, routerKey] = BdApi.Webpack.getWithKey(
+            m => m?.toString?.()?.includes("transitionTo -"),
+            { searchExports: true }
+        );
+
+        // Patches the module to extract the group chat id and unhide it from the DM list before running
+        BdApi.Patcher.before("HideGroupChats", RouterModule, routerKey, (thisObject, args) => {
+            const path = args[0];
+            const channelId = path?.split("/").pop();
             if (hiddenDmList.includes(channelId)) {
-                BdApi.DOM.removeStyle(styleid);
-                hiddenDmList = hiddenDmList.filter(dmId => dmId !== channelId);
+                BdApi.DOM.removeStyle(`hgc-${channelId}`);
+                hiddenDmList = hiddenDmList.filter(id => id !== channelId);
             }
         });
-
-        observer.observe(document.body, {
-            childList: true
-        });
-
     },
 
     stop() {
 
         // Save hidden DMs to storage
         BdApi.Data.save("HideGroupChats", "hidelist", hiddenDmList);
-
-        observer.disconnect();
 
         // Unhides all group chats
         hiddenDmList.forEach(dmId => {
