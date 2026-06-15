@@ -55,9 +55,23 @@ function hideGroupChat() {
     });
 }
 
+function hideGroupChats(groupchats) {
+    groupchats.forEach(dmId => {
+        const rule = `li:has(a[href="/channels/@me/${dmId}"]) { display: none !important; }`;
+        const styleid = `hgc-${dmId}`;
+        BdApi.DOM.addStyle(styleid, rule);
+    });
+}
+
 module.exports = () => ({
     start() {
+
+        // Loaded saved DMs and hide them
+        hiddenDmList = BdApi.Data.load("HideGroupChats", "hidelist");
+        hideGroupChats(hiddenDmList);
+
         hideGroupChat();
+
         // Unhides the group chat from the DM list if it is opened
         observer = new MutationObserver(() => {
             const channelId = window.location.pathname.split('/').pop();
@@ -75,6 +89,9 @@ module.exports = () => ({
     },
 
     stop() {
+
+        // Save hidden DMs to storage
+        BdApi.Data.save("HideGroupChats", "hidelist", hiddenDmList);
 
         observer.disconnect();
 
