@@ -3,6 +3,7 @@
  * @author Kayed Mankal
  * @description Allows users to hide group chats from the DM list
  * @version 0.0.1
+ * @source https://github.com/kayedm/hide-group-chats
  */
 
 let dmList = [];
