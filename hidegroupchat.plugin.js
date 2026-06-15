@@ -70,7 +70,7 @@ module.exports = () => ({
     start() {
 
         // Loaded saved DMs and hide them
-        hiddenDmList = BdApi.Data.load("HideGroupChats", "hidelist");
+        hiddenDmList = BdApi.Data.load("HideGroupChats", "hidelist") ?? [];
         hideGroupChats(hiddenDmList);
 
         hideGroupChat();
