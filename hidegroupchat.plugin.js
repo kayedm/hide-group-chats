@@ -55,6 +55,10 @@ function hideGroupChat() {
     });
 }
 
+/**
+ * Hides a given list of dm id's
+ * @param groupchats The list of Dm's to hide
+ */
 function hideGroupChats(groupchats) {
     groupchats.forEach(dmId => {
         const rule = `li:has(a[href="/channels/@me/${dmId}"]) { display: none !important; }`;
@@ -116,7 +120,7 @@ module.exports = () => ({
     onSwitch() {
 
         // View changes remove the hidden styles, so they must be reapplied
-        hideGroupChats();
+        hideGroupChat();
 
     }
 });
