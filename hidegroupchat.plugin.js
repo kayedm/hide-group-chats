@@ -91,6 +91,9 @@ module.exports = () => ({
             delete dm.dataset.hasListener;
         });
 
+        hiddenDmList = [];
+        dmList = [];
+
     },
 
     onSwitch() {
