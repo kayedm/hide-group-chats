@@ -10,7 +10,7 @@ let dmList = [];
 let hiddenDmList = [];
 
 /**
- * Gets a list of group DM's
+ * Gets a list of group DMs
  */
 function getGroupChats() {
     // Populates the DM list with group chat subtext elements
@@ -25,11 +25,11 @@ function getGroupChats() {
 }
 
 /**
- * Replaces a group chats x button functionality to hide the group instead of leaving it
+ * Replaces a group chat's x button functionality to hide the group instead of leaving it
  */
 function addListeners() {
 
-    // Attaches an event listener to group chat close button thats hides the group chat when pressed
+    // Attaches an event listener to group chat close buttons and hides the group chat when pressed
     dmList.forEach(dm => {
 
         if (dm.dataset.hasListener) {
@@ -56,8 +56,8 @@ function addListeners() {
 }
 
 /**
- * Hides a given list of chat DM's
- * @param groupchats The list of group DMs to hide
+ * Hides a given list of chat DM's IDs
+ * @param groupchats The list of group DMs IDs to hide
  */
 function hideGroupChats(groupchats) {
     groupchats.forEach(dmId => {
@@ -76,16 +76,16 @@ module.exports = () => ({
 
         // Gets a list of all group chats from the DM list
         getGroupChats();
-        // Adds listeners to the x button on the gorup chats to hide them instead of leave them
+        // Adds listeners to the x button on the group chats and hides them when pressed
         addListeners();
 
-        // Finds the modual that runs when transitioning to a new group chat
+        // Finds the module that runs when transitioning to a new group chat
         const [RouterModule, routerKey] = BdApi.Webpack.getWithKey(
             m => m?.toString?.()?.includes("transitionTo -"),
             { searchExports: true }
         );
 
-        // Patches the module to extract the group chat id and un hide it from the DM list
+        // Patches the module to extract the group chat id and unhide it from the DM list when opened
         BdApi.Patcher.before("HideGroupChats", RouterModule, routerKey, (thisObject, args) => {
             const path = args[0];
             const channelId = path?.split("/").pop();
